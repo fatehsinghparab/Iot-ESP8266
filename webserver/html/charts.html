@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="public/js/chart.js"></script>
+    <script src="public/js/socket.io.js"></script>
+</head>
+<body>
+    <h1 style="/*! width: auto; */text-align: center;text-decoration-style: double;text-decoration-line: underline; text-shadow: 1px 1px 0px yellow;">Live data from <em style="color: rgb(198, 23, 213);">ESP8266</em> and <em style="color: rgb(198, 23, 213);">LDR</em> sensor</h1>
+    <div>
+        <canvas id="myChart"></canvas>
+    </div>
+</body>
+<script>
+    const labels = [];
+    const data = {
+    labels: labels,
+    datasets: [{
+        label: 'Temperature',
+        backgroundColor: 'rgb(255, 255, 255)',
+        borderColor: 'rgb(255, 99, 132)',
+        data: [],
+    }]
+    };
+
+    const config = {
+        type: 'line',
+        data,
+        options: {
+            scales: {
+                x: {
+                    grid: {
+                    color: 'red',
+                    borderColor: 'grey',
+                    tickColor: 'grey'
+                    }
+                },
+                y: {
+                    grid: {
+                    color: 'red',
+                    borderColor: 'grey',
+                    tickColor: 'grey'
+                    }
+                }
+    }
+        }
+    };
+    var myChart = new Chart(
+    document.getElementById('myChart'),
+    config
+    );
+
+
+    function addData(chart, label, data) {
+        chart.data.labels.push(label);
+        chart.data.datasets.forEach((dataset) => {
+            dataset.data.push(data);
+        });
+        chart.update();
+    }
+
+    const socket = io()
+    socket.on("pushData", function(data){
+        addData(myChart, data.time, data.value)
+    })
+</script>
+</html>
